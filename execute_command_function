@@ -24,6 +24,7 @@ void execute_command(const char *command)
 {
     pid_t pid;
     int status;
+    char *envp[] = {NULL}; /*Environment variables (currently empty)*/
 
     pid = fork();
 
@@ -35,31 +36,39 @@ void execute_command(const char *command)
     else if (pid == 0)
     {
         /*Child process*/
-        char *args[] = {command, NULL};
-        if (execvp(command, args) == -1)
+        char *args[2];
+        args[0] = (char *)command;
+        args[1] = NULL;
+        if (execve(command, args, envp) == -1)
         {
-            perror("execvp");
+            perror("execve");
             exit(EXIT_FAILURE);
         }
     }
     else
     {
-        // Parent process
+        /*Parent process*/
         waitpid(pid, &status, 0);
 
         if (WIFEXITED(status))
         {
             int exit_status = WEXITSTATUS(status);
+            char status_str[10]; /*Buffer to store exit status as string*/
+            snprintf(status_str, sizeof(status_str), "%d", exit_status);
             handle_print("Child exited with status ");
-            // Convert exit_status to string and print it using handle_print()
-            // Example: handle_print("Child exited with status 0\n");
+            handle_print(status_str); /*Print exit status*/
+            handle_print("\n");
         }
         else if (WIFSIGNALED(status))
         {
             int signal_num = WTERMSIG(status);
+            char signal_str[10]; /*Buffer to store signal number as string*/
+            snprintf(signal_str, sizeof(signal_str), "%d", signal_num);
             handle_print("Child terminated by signal ");
-            // Convert signal_num to string and print it using handle_print()
-            // Example: handle_print("Child terminated by signal 15\n");
+            handle_print(signal_str); /*Print signal number*/
+            handle_print("\n");
         }
     }
 }
+
+***STILL INQUIRING ABOUT THE snprintf() function***
