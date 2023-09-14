@@ -2,10 +2,10 @@
 
 void execute_command(char *command)
 {
-     pid_t pid;
-     int status;
+	pid_t pid;
+	int status;
 
-     pid = fork();
+	pid = fork();
 
      if (pid == -1)
      {
