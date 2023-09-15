@@ -76,29 +76,29 @@ Simple flowchart:
 Display prompt > Read User input > Parsing and Tokenizing user input > Executing command; handling built-in commands; handling errors Handling special characters >>>>
 
 Break down of the project into smaller tasks to guide us through the implementation process. Here are the main steps involved in creating a simple shell:
-1. Displaying a prompt: Write a function to display a prompt (e.g., "$") to indicate that the shell is ready to accept commands. 
+1. Displaying a prompt: Write a function to display a prompt (e.g., "$") to indicate that the shell is ready to accept commands.
 
-2. Reading user input: Implement a function to read input from the user. You can use getline() to read the input line by line. 
+2. Reading user input: Implement a function to read input from the user. You can use getline() to read the input line by line.
 
 3.Parsing the user input: Create a function to parse the user input into individual commands and arguments. You can use strtok() to split the input into tokens.
 
- 4. Handling built-in commands: Identify built-in commands like "cd" “alias”, “exit” without arguments and implement separate functions to handle them. For example, when the user enters "cd directory", you should change the current working directory to "directory". 
+ 4. Handling built-in commands: Identify built-in commands like "cd" “alias”, “exit” without arguments and implement separate functions to handle them. For example, when the user enters "cd directory", you should change the current working directory to "directory".
 
-5. Executing external commands: Implement a function to execute external commands using the execve() system call. You will need to fork a child process and replace it with the desired command using execve(). The parent process should wait for the child process to complete. 
+5. Executing external commands: Implement a function to execute external commands using the execve() system call. You will need to fork a child process and replace it with the desired command using execve(). The parent process should wait for the child process to complete.
 
-6. Handle the PATH fork must not be called if the command doesn’t exist 
+6. Handle the PATH fork must not be called if the command doesn’t exist.
 
-7. Handle Implementation of the env built-in, that prints the current environment 
+7. Handle Implementation of the env built-in, that prints the current environment.
 
-8. Handling signals: Set up signal handlers to handle signals like Ctrl+C (SIGINT) and Ctrl+Z (SIGTSTP). You can use the signal() function to register signal handlers. 
+8. Handling signals: Set up signal handlers to handle signals like Ctrl+C (SIGINT) and Ctrl+Z (SIGTSTP). You can use the signal() function to register signal handlers.
 
-9. Handling input/output redirection: Detect and handle input/output redirection symbols ("<", ">", ">>") in the user input. For example, if the user enters "command > file.txt", you should redirect the command's output to the specified file. 
+9. Handling input/output redirection: Detect and handle input/output redirection symbols ("<", ">", ">>") in the user input. For example, if the user enters "command > file.txt", you should redirect the command's output to the specified file.
 
-10. Handling piping: Detect and handle pipe symbol ("|") in the user input. If the user enters "command1 | command2", you should connect the output of "command1" as the input of "command2". 
+10. Handling piping: Detect and handle pipe symbol ("|") in the user input. If the user enters "command1 | command2", you should connect the output of "command1" as the input of "command2".
 
-11. Handling background processes: Implement the ability to run commands in the background by appending "&" at the end of the command. The shell should not wait for background processes to complete. 
+11. Handling background processes: Implement the ability to run commands in the background by appending "&" at the end of the command. The shell should not wait for background processes to complete.
 
-12. Exit command with arguments: Implement the ability to exit the shell when the user enters the "exit" command. 
+12. Exit command with arguments: Implement the ability to exit the shell when the user enters the "exit" command.
 
 13. Memory management and cleanup: Make sure to free any dynamically allocated memory and handle any necessary cleanup before exiting the shell
 **Flowchart

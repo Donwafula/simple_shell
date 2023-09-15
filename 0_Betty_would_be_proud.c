@@ -1,15 +1,13 @@
-#include <stdio.h>
+i#include <stdio.h>
 
 /**
- * main - Entry point
- *
- * Description: This is the main function that prints "Hello, Betty!" to the
+ * _bettyisproud - function that prints "Hello, Betty!" to the
  * standard output.
  *
  * Return: Always 0 (Success)
  */
-int main(void)
+int _bettyisproud(void)
 {
-     printf("Hello, Betty!\n");
-     return (0);
+	printf("Hello, Betty!\n");
+	return (0);
 }
