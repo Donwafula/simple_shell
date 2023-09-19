@@ -60,7 +60,7 @@ void _exit_env(char **tokens, char **env, int sh_exit)
 	{
 		if (env != NULL)
 		{
-			if (pintenvronment(env, &sh_exit) != 0)
+			if (printenvronment(env, &sh_exit) != 0)
 				perror("env failed");
 		}
 	}

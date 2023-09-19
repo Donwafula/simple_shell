@@ -10,7 +10,7 @@
 void execute_command(const char *path, char *tokens[], char **env)
 {
 	pid_t child_pid = 0;
-	int status = 0;
+	int status = 0, exit_status = 0;
 
 	child_pid = fork();
 	if (child_pid == -1)
@@ -33,7 +33,7 @@ void execute_command(const char *path, char *tokens[], char **env)
 			perror("waitpid failed");
 			exit(EXIT_FAILURE);
 		}
-		int exit_status = WEXITSTATUS(status);
+		exit_status = WEXITSTATUS(status);
 
 		if (exit_status == 1)
 			_print("");
