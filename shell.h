@@ -235,8 +235,6 @@ int replace_alias(info_t *);
 int replace_vars(info_t *);
 int replace_string(char **, char *);
 
-#endif
-
 /**wellington is up to here*/
 
 void execute_command(char *command);
