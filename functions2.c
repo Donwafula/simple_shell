@@ -1,36 +1,36 @@
 #include "shell.h"
 
 /**
- * lacate - Finds command in path
+ * locate - Finds command in path
  * @name: command
  * Return: path
-*/
+ */
 char *locate(const char *name)
 {
 	char *path = _getenv("PATH");
-    char *token = NULL, *file_path = NULL;
+	char *token = NULL, *file_path = NULL;
 
-    if (file_exists(name))
-    {
-        free(path);
-        return _strdup(name);
-    }
+	if (file_exists(name))
+	{
+		free(path);
+		return _strdup(name);
+	}
 
-    token = strtok(path, ":");
-    while (token != NULL)
-    {
-        file_path = join_paths('/', token, name);
-        if (file_exists(file_path))
-        {
-            free(path);
-            return file_path;
-        }
-        free(file_path);
-        token = strtok(NULL, ":");
-    }
+	token = strtok(path, ":");
+	while (token != NULL)
+	{
+		file_path = join_paths('/', token, name);
+		if (file_exists(file_path))
+		{
+			free(path);
+			return file_path;
+		}
+		free(file_path);
+		token = strtok(NULL, ":");
+	}
 
-    free(path);
-    return NULL;
+	free(path);
+	return NULL;
 }
 
 /**
@@ -39,7 +39,7 @@ char *locate(const char *name)
  * @path1: first path
  * @path2: second path
  * Return: joined path
-*/
+ */
 char *join_paths(const char sep, const char *path1, const char *path2)
 {
 	size_t i = 0, len = 0, k = 0;
@@ -56,7 +56,7 @@ char *join_paths(const char sep, const char *path1, const char *path2)
 	len += 1;
 
 	joined = malloc(sizeof(*joined) * (len + 1));
-	
+
 	i = 0;
 	while (path1[k])
 	{
@@ -76,7 +76,7 @@ char *join_paths(const char sep, const char *path1, const char *path2)
  * file_exists - Checks for executable file
  * @filepath: file path
  * Return: 1 if file exists, 0 otherwise
-*/
+ */
 int file_exists(const char *filepath)
 {
 	struct stat buffer;
