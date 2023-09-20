@@ -1,64 +1,9 @@
-<<<<<<< HEAD:handle_printf.c
 #include "shell.h"
 
 /**
- * _print - takes a pointer to a null-terminated character array as its argument
- * @str: input string
+ * _prompt - prints the $ prompt
  * Return: void
  */
-void _print(const char *str)
-{
-	size_t str_len;
-	if (str == NULL)
-	{
-		write(STDOUT_FILENO, "(null)", 6);
-		fflush(stdout);
-		return;
-	}
-	str_len = _strlen(str);
-	write(STDOUT_FILENO, str, str_len);
-	fflush(stdout);
-}
-
-/**
- * _prompt - prints the $ prompt
- * Return: void
-**/
-void _prompt(void)
-{
-	if (isatty(STDIN_FILENO))
-	write(STDOUT_FILENO, "JDshell$ ", 9);
-	fflush(stdout);
-}
-
-/**
- * _input - function allocates memory for a character buffer
- * Return: void
-**/
-char *_input(void)
-{
-	char *str = NULL;
-	size_t str_size = 0;
-	ssize_t str_read = getline(&str, &str_size, stdin);
-
-	if (str_read == -1)
-	{
-		free(str);
-		return (NULL);
-	}
-	if (str_read > 0 && str[str_read - 1] == '\n')
-	{
-		str[str_read - 1] = '\0';
-	}
-	return (str);
-}
-=======
-#include "shell.h"
-
-/**
- * _prompt - prints the $ prompt
- * Return: void
-*/
 void _prompt(void)
 {
 	if (isatty(STDIN_FILENO))
@@ -67,9 +12,9 @@ void _prompt(void)
 }
 
 /**
- * _input - function allocates memory for a character buffer
+ * _input - reads user input
  * Return: void
-*/
+ */
 char *_input(void)
 {
 	char *str = NULL;
@@ -82,9 +27,37 @@ char *_input(void)
 		return (NULL);
 	}
 	if (str_read > 0 && str[str_read - 1] == '\n')
-	{
 		str[str_read - 1] = '\0';
-	}
 	return (str);
 }
->>>>>>> fdc9a428e02f1c155a8e0483f2d150597193e271:functions6.c
+
+/**
+ * _setunsetenv - handles setting and unsetting envs
+ * @tokens: array
+ * Return: 0 or -1
+ */
+innt _setunsetenv(char **tokens)
+{
+	if (tokens[1] == NULL || tokens[2] == NULL)
+	{
+		_print("Usage: setenv VARIABLE VALUE\n");
+		return (-1);
+	}
+	if (_strcmp(tokens[0], "setenv") == 0)
+	{
+		if (_setenv(tokens[1], tokens[2], 1) == -1)
+		{
+			perror("setenv failed");
+			return (-1);
+		}
+	}
+	else if
+	{
+		if (_unsetenv(tokens[1]) == -1)
+		{
+			perror("unsetenv failed");
+			return (-1);
+		}
+	}
+	return (0);
+}

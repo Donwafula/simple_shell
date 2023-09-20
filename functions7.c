@@ -1,8 +1,8 @@
 #include "shell.h"
 
 /**
- * _cd_command - changes the current working directory
- * @tokens: array of tokens
+ * _ccd_command - changes the current working directory
+ * @tokens: array of toks
  * Return: void
  */
 void _cd_command(char **tokens)
@@ -12,10 +12,10 @@ void _cd_command(char **tokens)
 
 	if (new_dir == NULL)
 	{
-		new_dir = getenv("HOME");
+		new_dir = _getenv("HOME");
 		if (new_dir == NULL)
 		{
-			perror("cd: Home directory not found\n");
+			perror("cd: HOME directory not found");
 			return;
 		}
 	}
@@ -45,34 +45,51 @@ void _cd_command(char **tokens)
 
 /**
  * _exit_env - handles "exit" and "env" commands
- * @tokens: array of tokens
- * @env: environment
+ * @tokens: tokens
+ * @env: env
  * @sh_exit: integer
  * Return: void
  */
-void _exit_env(char **tokens, char **env, int sh_exit)
+Void _exit_env(char **tokens, char **env, int sh_exit)
 {
-	int status = 0;
+	int status;
 
+	sh_exit = 0;
 	if (_strcmp(tokens[0], "exit") == 0)
 	{
 		if (tokens[1] != NULL)
 		{
+			if (tokens[2] != NULL)
+			{
+				_print("exit: too many arguments\n");
+				return;
+			}
 			status = _atoi(tokens[1]);
 			if (status != 0)
 				sh_exit = status;
 			else
-				sh_exit = EXIT_FAILURE;
+			{
+				_print("exit: numeric argument required\n");
+				sh_exit = 2;
+			}
 		}
 		free(tokens);
 		exit(sh_exit);
 	}
 	else if (_strcmp(tokens[0], "env") == 0)
 	{
-		if (env != NULL)
+		if (_strcmp(tokens[0], "env") == 0)
 		{
-			if (printenvronment(env, &sh_exit) != 0)
-				perror("env failed");
+			if (tokens[1] != NULL)
+			{
+				_print("env: too many arguments\n");
+				return;
+			}
+			if (env != NULL)
+			{
+				if (printenvronment(env, &sh_exit) != 0)
+					perror("env failed");
+			}
 		}
 	}
 }

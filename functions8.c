@@ -6,11 +6,11 @@
  * @tokens: array of tokens
  * @env: environment
  * Return: void
-*/
+ */
 void execute_command(const char *path, char *tokens[], char **env)
 {
-	pid_t child_pid = 0;
-	int status = 0, exit_status = 0;
+	pid_t child_pid;
+	int status;
 
 	child_pid = fork();
 	if (child_pid == -1)
@@ -33,39 +33,23 @@ void execute_command(const char *path, char *tokens[], char **env)
 			perror("waitpid failed");
 			exit(EXIT_FAILURE);
 		}
-		exit_status = WEXITSTATUS(status);
+		if (WIFEXITED(status))
+		{
+			int exit_status = WEXITSTATUS(status);
 
-		if (exit_status == 1)
+			if (exit_status == 1)
+				_print("");
 			_print("");
-		_print("");
+		}
 	}
-}
-
-/**
- * locate_and_execute - locate and execute the command using PATH.
- * @tokens: array of tokens
- * @env: environment
- * Return: void
- */
-void locate_and_execute(char *tokens[], char **env)
-{
-	char *command_path = locate(tokens[0]);
-
-	if (command_path != NULL)
-	{
-		execute_command(command_path, tokens, env);
-		free(command_path);
-	}
-	else
-		perror("Command not found\n");
 }
 
 /**
  * _external_exec - locate and execute the command using PATH
- * @tokens: array of tokens
- * @env: environment
+ * @tokens: array
+ * @env: env
  * Return: void
-*/
+ */
 void _external_exec(char *tokens[], char **env)
 {
 	if (file_exists(tokens[0]))
@@ -77,6 +61,6 @@ void _external_exec(char *tokens[], char **env)
 		if (command_path != NULL)
 			execute_command(command_path, tokens, env);
 		else
-			perror("Command not found\n");
+			perror("Command not found");
 	}
 }

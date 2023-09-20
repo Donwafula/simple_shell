@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * _commands - executes a command
+ * _commands - executes commands
  * @command: array of tokens
  * @env: environment
  * @sh_exit: integer
@@ -9,7 +9,7 @@
  */
 void _commands(char **command, char **env, int *sh_exit)
 {
-	int x = 0;
+	int x = 0, rep = 0;
 	char **tokens, *command_str = "";
 
 	for (x = 0; command[x] != NULL; x++)
@@ -25,12 +25,21 @@ void _commands(char **command, char **env, int *sh_exit)
 		free(tokens);
 		return;
 	}
+	for (rep = 0; tokens[rep] != NULL; rep++)
+	{
+		if (__strcmp(tokens[rep], "$") == 0)
+			replacePID(tokens);
+	}
 	if (_strcmp(tokens[0], "cd") == 0)
 		_cd_command(tokens);
 	else if (_strcmp(tokens[0], "exit") == 0)
 		_exit_env(tokens, env, *sh_exit);
+	else if (_strcmp(tokens[0], "setenv") == 0)
+		_setunsetenv(tokens);
 	else if (_strcmp(tokens[0], "env") == 0)
 		_exit_env(tokens, env, *sh_exit);
+	else if (_strcmp(tokens[0], "unsetenv") == 0)
+		_setunsetenv(tokens);
 	else
 		_external_exec(tokens, env);
 	free(command_str);
@@ -38,10 +47,10 @@ void _commands(char **command, char **env, int *sh_exit)
 
 /**
  * _ctrld - Handle input conditions including EOF and whitespace
- * @string: The input string.
- * @read_result: The result of reading input.
- * @exit_status: Pointer to the exit status variable.
- * Return: 0 for normal input, EXIT_STATUS_EOF for EOF
+ * @string: The input string
+ * @read_result: The result of reading input
+ * @exit_status: Pointer to the exit status variable
+ * Return: 0 or EOF
  */
 int _ctrld(char *string, ssize_t read_result, int *exit_status)
 {
@@ -61,10 +70,10 @@ int _ctrld(char *string, ssize_t read_result, int *exit_status)
 	}
 	if (string == NULL)
 		return (0);
-	if (_strcmp(string, "\n") == 0)
+	if (__strcmp(string, "\n") == 0)
 	{
 		*exit_status = 0;
-		return (EXIT_STATUS_EOF);
+		return (*exit_status);
 	}
 	while (string[i] != '\n')
 	{
@@ -73,5 +82,5 @@ int _ctrld(char *string, ssize_t read_result, int *exit_status)
 		++i;
 	}
 	*exit_status = 0;
-	return (EXIT_STATUS_EOF);
+	return (*exit_status);
 }
