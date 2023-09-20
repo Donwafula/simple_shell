@@ -7,29 +7,40 @@
  */
 void _cd_command(char **tokens)
 {
-	char *new_dir = tokens[1], current_dir[PATH_MAX], *home_dir = NULL;
+	char *new_dir = tokens[1], current_dir[PATH_MAX];
+	static char prev_working_dir[PATH_MAX];
 
 	if (new_dir == NULL)
 	{
-		home_dir = _getenv("HOME");
-		if (home_dir == NULL)
+		new_dir = getenv("HOME");
+		if (new_dir == NULL)
 		{
 			perror("cd: Home directory not found\n");
-			exit(EXIT_FAILURE);
+			return;
 		}
-		new_dir = home_dir;
+	}
+	if (_strcmp(new_dir, "-") == 0)
+	{
+		if (prev_working_dir[0] != '\0')
+			new_dir = prev_working_dir;
+		else
+		{
+			perror("cd: no previous directory");
+			return;
+		}
 	}
 	if (chdir(new_dir) == -1)
-	{
 		perror("cd failed");
-		exit(EXIT_FAILURE);
-	}
-	if (getcwd(current_dir, sizeof(current_dir)) == NULL)
+	else
 	{
-		perror("getcwd failed");
-		exit(EXIT_FAILURE);
+		if (getcwd(current_dir, sizeof(current_dir)) != NULL)
+		{
+			if (setenv("PWD", current_dir, 1) != 0)
+				perror("setenv failed");
+		}
+		else
+			perror("getcwd failed");
 	}
-	_print(current_dir);
 }
 
 /**

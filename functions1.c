@@ -98,5 +98,6 @@ char *_strcat(char *dest, const char *src)
 	{
         result[len_dest + x] = src[x];
     }
+    result[len_dest + len_src] = '\0';
     return (result);
 }

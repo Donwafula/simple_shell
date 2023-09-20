@@ -9,6 +9,7 @@ char *locate(const char *name)
 {
 	char *path = _getenv("PATH");
     char *token = NULL, *file_path = NULL;
+    char *result = NULL;
 
     if (file_exists(name))
     {
@@ -22,8 +23,10 @@ char *locate(const char *name)
         file_path = join_paths('/', token, name);
         if (file_exists(file_path))
         {
-            free(path);
-            return file_path;
+            	result = _strdup(file_path);
+		free(file_path);
+		free(path);
+            	return file_path;
         }
         free(file_path);
         token = strtok(NULL, ":");
