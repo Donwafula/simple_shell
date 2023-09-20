@@ -4,7 +4,7 @@
  * _parsetokens - parses and tokenizes input
  * @input: input string
  * Return: array of tokens
-*/
+ **/
 char **_parsetokens(const char *input)
 {
 	int token_count = 0;
@@ -29,7 +29,6 @@ char **_parsetokens(const char *input)
 		token_count++;
 		token = strtok(NULL, " \n\t\r");
 	}
-	
 	tokens[token_count] = NULL;
 	return (tokens);
 }
