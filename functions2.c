@@ -4,6 +4,7 @@
  * locate - Finds command in PATH
  * @name: command
  * Return: path
+ * user commands
  */
 char *locate(const char *name)
 {
