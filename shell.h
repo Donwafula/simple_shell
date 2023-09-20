@@ -19,7 +19,7 @@
 #define READ_BUF_SIZE 1024
 #define WRITE_BUF_SIZE 1024
 
-/*Global variables*/
+/*Global declarations*/
 extern char **environ;
 
 /*String manipulation functions*/
@@ -34,9 +34,9 @@ char *_strcpy(char *dest, char *src);
 /*Simple shell functions*/
 void _print(const char *str);
 void _prompt(void);
+void _commands(char **command, char **env, int *sh_exit);
 char *_input(void);
 char **_parsetokens(const char *input);
-void _commands(char **command, char **env, int *sh_exit);
 
 /*Inbuilt commands*/
 char *_getenv(const char *name);
@@ -49,13 +49,18 @@ void locate_and_execute(char *tokens[], char **env);
 char *locate(const char *name);
 char *join_paths(const char sep, const char *path1, const char *path2);
 int file_exists(const char *filepath);
-bool _whitespace(const char *str);
 
-/*Cleanup*/
+/*cleanup*/
 void cleanup_tokens(char **tokens);
 
 /*Signals*/
 void handlesigs(int sig);
 int _ctrld(char *string, ssize_t read_result, int *exit_status);
+
+/*Other inbuilts*/
+int _setunsetenv(char **tokens);
+int _setenv(const char *name, const char *value, int overwrite);
+int _unsetenv(const char *name);
+void replacePID(char **tokens);
 
 #endif
