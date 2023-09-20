@@ -3,6 +3,7 @@
 /**
  * _atoi - converts str to int
  * @s: str
+ * user comments
  * Return: int
  */
 int _atoi(char *s)
