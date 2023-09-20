@@ -8,7 +8,7 @@
 int _atoi(char *s)
 {
 	size_t index = 0;
-	int result = 0, sign = 1. digitEncountered = 0;
+	int result = 0, sign = 1, digitEncountered = 0;
 
 	while (s[index] == ' ')
 		index++;
@@ -78,5 +78,5 @@ int _strncmp(const char *s1, const char *s2, size_t len)
 		}
 		p++;
 	}
-	return (0);
+	return (d);
 }

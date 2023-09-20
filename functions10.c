@@ -11,7 +11,7 @@ int _unsetenv(const char *name)
 		return (-1);
 	if (unsetenv(name) != 0)
 	{
-		perror("unsetenv failed")
+		perror("unsetenv failed");
 			return (-1);
 	}
 	return (0);

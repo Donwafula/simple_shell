@@ -27,7 +27,7 @@ void _commands(char **command, char **env, int *sh_exit)
 	}
 	for (rep = 0; tokens[rep] != NULL; rep++)
 	{
-		if (__strcmp(tokens[rep], "$") == 0)
+		if (_strcmp(tokens[rep], "$") == 0)
 			replacePID(tokens);
 	}
 	if (_strcmp(tokens[0], "cd") == 0)
@@ -70,7 +70,7 @@ int _ctrld(char *string, ssize_t read_result, int *exit_status)
 	}
 	if (string == NULL)
 		return (0);
-	if (__strcmp(string, "\n") == 0)
+	if (_strcmp(string, "\n") == 0)
 	{
 		*exit_status = 0;
 		return (*exit_status);

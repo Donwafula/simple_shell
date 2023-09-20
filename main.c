@@ -10,7 +10,7 @@
 int main(int argc, char *argv[], char *envp[])
 {
 	char **tokens = NULL, *usr_input = NULL, **env = envp;
-	siize_t _in;
+	size_t _in;
 	int sh_exit = 0;
 
 	(void)argc, (void)argv;

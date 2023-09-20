@@ -36,7 +36,7 @@ char *_input(void)
  * @tokens: array
  * Return: 0 or -1
  */
-innt _setunsetenv(char **tokens)
+int _setunsetenv(char **tokens)
 {
 	if (tokens[1] == NULL || tokens[2] == NULL)
 	{
@@ -51,7 +51,7 @@ innt _setunsetenv(char **tokens)
 			return (-1);
 		}
 	}
-	else if
+	else if (_strcmp(tokens[0], "unsetenv") == 0)
 	{
 		if (_unsetenv(tokens[1]) == -1)
 		{

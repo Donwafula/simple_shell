@@ -50,7 +50,7 @@ void _cd_command(char **tokens)
  * @sh_exit: integer
  * Return: void
  */
-Void _exit_env(char **tokens, char **env, int sh_exit)
+void _exit_env(char **tokens, char **env, int sh_exit)
 {
 	int status;
 
