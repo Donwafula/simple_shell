@@ -19,7 +19,7 @@ size_t _strlen(const char *s)
 
 /**
  * _strdup - returns a pointer to a newly allocated space in mem
- * @command: command
+ * @command: command from user
  * Return: pointer
  */
 char *_strdup(const char *command)
