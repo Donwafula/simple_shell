@@ -4,6 +4,7 @@
  * _strlen - returns the lenght of a string
  * @s: pointer
  * Return: len
+ * user command
  */
 size_t _strlen(const char *s)
 {
