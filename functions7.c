@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * _ccd_command - changes the current working directory
+ * _cd_command - changes the current working directory
  * @tokens: array of toks
  * Return: void
  */
