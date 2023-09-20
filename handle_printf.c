@@ -8,7 +8,6 @@
 void _print(const char *str)
 {
 	size_t str_len;
-	
 	if (str == NULL)
 	{
 		write(STDOUT_FILENO, "(null)", 6);
@@ -23,7 +22,7 @@ void _print(const char *str)
 /**
  * _prompt - prints the $ prompt
  * Return: void
-*/
+**/
 void _prompt(void)
 {
 	if (isatty(STDIN_FILENO))
@@ -34,7 +33,7 @@ void _prompt(void)
 /**
  * _input - function allocates memory for a character buffer
  * Return: void
-*/
+**/
 char *_input(void)
 {
 	char *str = NULL;
