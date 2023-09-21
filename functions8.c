@@ -1,66 +1,67 @@
 #include "shell.h"
 
 /**
- * execute_command - locate and execute the command using PATH
- * @path: path to the command
- * @tokens: array of tokens
- * @env: environment
- * Return: void
- */
-void execute_command(const char *path, char *tokens[], char **env)
+ * main - Entry point of the shell
+ * @argc: Number
+ * @argv: Argus
+ * Return: 0 on success and 1 on error
+ **/
+int main(int argc, char **argv)
 {
-	pid_t child_pid;
-	int status;
+	general_t *info;
+	int status_c;
 
-	child_pid = fork();
-	if (child_pid == -1)
+	info = malloc(sizeof(general_t));
+	if (info == NULL)
 	{
-		perror("fork failed");
-		exit(EXIT_FAILURE);
+		perror(argv[0]);
+		exit(1);
 	}
-	if (child_pid == 0)
-	{
-		if (execve(path, tokens, env) == -1)
-		{
-			perror(tokens[0]);
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		if (waitpid(child_pid, &status, 0) == -1)
-		{
-			perror("waitpid failed");
-			exit(EXIT_FAILURE);
-		}
-		if (WIFEXITED(status))
-		{
-			int exit_status = WEXITSTATUS(status);
 
-			if (exit_status == 1)
-				_print("");
-			_print("");
-		}
-	}
+	info->pid = getpid();
+	info->status_code = 0;
+	info->n_commands = 0;
+	info->argc = argc;
+	info->argv = argv;
+	info->mode = isatty(STDIN) == INTERACTIVE;
+	start(info);
+
+	status_c = info->status_code;
+
+	free(info);
+
+	return (status_c);
 }
 
 /**
- * _external_exec - locate and execute the command using PATH
- * @tokens: array
- * @env: env
+ * analyze_patterns - analyze
+ * @info: info
+ * @arguments: arg
  * Return: void
  */
-void _external_exec(char *tokens[], char **env)
+void analyze_patterns(general_t *info, char **arguments)
 {
-	if (file_exists(tokens[0]))
-		execute_command(tokens[0], tokens, env);
-	else
-	{
-		char *command_path = locate(tokens[0]);
+	int x;
 
-		if (command_path != NULL)
-			execute_command(command_path, tokens, env);
-		else
-			perror("Command not found");
+	for (x = 0; arguments[x] != NULL; x++)
+		arguments[x] = pattern_handler(info, arguments[x]);
+}
+
+/**
+ * pattern_handler - handler
+ * @info: info
+ * @string: string
+ * Return: char
+ */
+char *pattern_handler(general_t *info, char *string)
+{
+	int x;
+
+	for (x = 0; string[x] != '\0'; x++)
+	{
+		if (string[x] == '$' && string[x + 1] != '\0')
+			string = replace_value(info, &x, string);
 	}
+
+	return (string);
 }

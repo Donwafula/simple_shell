@@ -1,63 +1,111 @@
 #include "shell.h"
 
 /**
- * _prompt - prints the $ prompt
- * Return: void
- */
-void _prompt(void)
+ * bin_exit - Implementation of the exit builtin
+ * Description: Free all the memory used and
+ * exit with the last status_code
+ * @info: Information about the shell
+ * @arguments: Arguments received
+ **/
+void bin_exit(general_t *info, char **arguments)
 {
-	if (isatty(STDIN_FILENO))
-		write(STDOUT_FILENO, "JDshell$ ", 9);
-	fflush(stdout);
+	int status_c, status;
+
+	status = _TRUE;
+	if (arguments[1] != NULL)
+	{
+		status = number_controller(info, arguments[1]);
+	}
+
+	if (status == _FALSE)
+	{
+		return;
+	}
+	status_c = info->status_code;
+	free_memory_pp((void **) arguments);
+	free_memory_p((void *) info->buffer);
+	free_memory_p((void *) info->environment);
+	free_memory_p((void *) info);
+
+	exit(status_c);
 }
 
 /**
- * _input - reads user input
- * Return: void
+ * replace_value - replace value
+ * @info: info
+ * @index: s
+ * @string: str
+ * Return: char
  */
-char *_input(void)
+char *replace_value(general_t *info, int *index, char *string)
 {
-	char *str = NULL;
-	size_t str_size = 0;
-	ssize_t str_read = getline(&str, &str_size, stdin);
+	int x, new_s, old_s;
+	char *value;
 
-	if (str_read == -1)
+	x = *index;
+	x++;
+
+	value = replacement(info, index, string + x);
+	if (value == NULL)
 	{
-		free(str);
-		return (NULL);
+		string = _strcpy(string, "");
+		return (string);
 	}
-	if (str_read > 0 && str[str_read - 1] == '\n')
-		str[str_read - 1] = '\0';
-	return (str);
+
+	old_s = _strlen(string);
+	new_s = _strlen(value) + 1;
+
+	string = _realloc(string, old_s, new_s);
+	string = _strcpy(string, value);
+
+	free_memory_p(value);
+	*index = x;
+	return (string);
 }
 
 /**
- * _setunsetenv - handles setting and unsetting envs
- * @tokens: array
- * Return: 0 or -1
+ * replace_env - env
+ * @info: info
+ * @environment: env
+ * Return: cha
  */
-int _setunsetenv(char **tokens)
+char *replace_env(general_t *info, char *environment)
 {
-	if (tokens[1] == NULL || tokens[2] == NULL)
+	char *env;
+
+	(void) info;
+
+	env = _getenv(environment);
+	if (env != NULL)
+		return (env);
+
+	return (NULL);
+}
+
+/**
+ * replacement - entry
+ * @info: info
+ * @index: in
+ * @string: str
+ * Return: char
+ */
+
+char *replacement(general_t *info, int *index, char *string)
+{
+	char *t;
+	char symbol;
+
+	(void) index;
+
+	symbol = *string;
+	if (symbol != '?' && symbol != '$')
 	{
-		_print("Usage: setenv VARIABLE VALUE\n");
-		return (-1);
+		t = replace_env(info, string);
+		return (t);
 	}
-	if (_strcmp(tokens[0], "setenv") == 0)
-	{
-		if (_setenv(tokens[1], tokens[2], 1) == -1)
-		{
-			perror("setenv failed");
-			return (-1);
-		}
-	}
-	else if (_strcmp(tokens[0], "unsetenv") == 0)
-	{
-		if (_unsetenv(tokens[1]) == -1)
-		{
-			perror("unsetenv failed");
-			return (-1);
-		}
-	}
-	return (0);
+
+	t = (symbol == '$') ? to_string(info->pid) :
+		to_string(info->status_code);
+
+	return (t);
 }

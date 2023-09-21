@@ -1,86 +1,72 @@
 #include "shell.h"
 
 /**
- * _commands - executes commands
- * @command: array of tokens
- * @env: environment
- * @sh_exit: integer
- * Return: void
- */
-void _commands(char **command, char **env, int *sh_exit)
+ * start_prompt - Loop re
+ * @info: Struct of general in
+ * Return: Buff NULL if EOF was found
+ **/
+void start_prompt(general_t *info)
 {
-	int x = 0, rep = 0;
-	char **tokens, *command_str = "";
+	char *buff;
+	char **arguments;
+	char *path;
 
-	for (x = 0; command[x] != NULL; x++)
+	signal(SIGINT, sigintHandler);
+	while (1)
 	{
-		if (x > 0)
-			command_str = _strcat(command_str, " ");
-		command_str = _strcat(command_str, command[x]);
+		prompt(info);
+		path = _getenv("PATH");
+		is_current_path(path, info);
+		info->environment = path;
+		buff = read_prompt();
+		if (buff == NULL)
+		{
+			print(info->mode == INTERACTIVE ? "exit\n" : "");
+			free(path);
+			break;
+		}
+		info->n_commands++;
+		if (buff[0] != '\n')
+		{
+			arguments = split_words(buff, " \t\n");
+			info->arguments = arguments;
+			info->buffer = buff;
+			analyze_patterns(info, arguments);
+			analyze(arguments, info, buff);
+			free_memory_pp((void *) arguments);
+		}
+		free_memory_p((void *) buff);
+		free_memory_p((void *) path);
 	}
-	tokens = _parsetokens(command_str);
-	if (tokens[0] == NULL)
-	{
-		free(command_str);
-		free(tokens);
-		return;
-	}
-	for (rep = 0; tokens[rep] != NULL; rep++)
-	{
-		if (_strcmp(tokens[rep], "$") == 0)
-			replacePID(tokens);
-	}
-	if (_strcmp(tokens[0], "cd") == 0)
-		_cd_command(tokens);
-	else if (_strcmp(tokens[0], "exit") == 0)
-		_exit_env(tokens, env, *sh_exit);
-	else if (_strcmp(tokens[0], "setenv") == 0)
-		_setunsetenv(tokens);
-	else if (_strcmp(tokens[0], "env") == 0)
-		_exit_env(tokens, env, *sh_exit);
-	else if (_strcmp(tokens[0], "unsetenv") == 0)
-		_setunsetenv(tokens);
-	else
-		_external_exec(tokens, env);
-	free(command_str);
+
 }
 
 /**
- * _ctrld - Handle input conditions including EOF and whitespace
- * @string: The input string
- * @read_result: The result of reading input
- * @exit_status: Pointer to the exit status variable
- * Return: 0 or EOF
- */
-int _ctrld(char *string, ssize_t read_result, int *exit_status)
+ * start - Handle the m
+ * Description: Mode can be INTE
+ * @info: Strucormation about the shell
+ **/
+void start(general_t *info)
 {
-	int i = 0;
+	start_prompt(info);
+}
 
-	if (read_result <= 0)
-	{
-		free(string);
-		exit(*exit_status);
-	}
-	if (read_result == EOF)
-	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "\n", 1);
-		free(string);
-		exit(*exit_status);
-	}
-	if (string == NULL)
-		return (0);
-	if (_strcmp(string, "\n") == 0)
-	{
-		*exit_status = 0;
-		return (*exit_status);
-	}
-	while (string[i] != '\n')
-	{
-		if (string[i] != ' ' && string[i] != '\t')
-			return (0);
-		++i;
-	}
-	*exit_status = 0;
-	return (*exit_status);
+/**
+ * _putchar - Print a character
+ * @c: Charact
+ * Return: On 1 -1
+ **/
+int _putchar(char c)
+{
+	return (write(STDOUT, &c, 1));
+}
+
+/**
+ * print - Print a message to STDOU
+ * @msg: Messag
+ * Return: On success number  On errror -1, and set the error
+ */
+int print(char *msg)
+{
+	return (print_to_fd(msg, STDOUT));
 }

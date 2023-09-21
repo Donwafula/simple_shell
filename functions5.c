@@ -1,54 +1,108 @@
 #include "shell.h"
 
 /**
- * _parsetokens - parses and tokenizes input
- * @input: input
- * Return: array
- */
-char **_parsetokens(const char *input)
+ * message_selector - Select the message that match with the error_code
+ * @info: General information about the shell
+ * Return: Error message
+ **/
+char *message_selector(general_t info)
 {
-	int token_count = 0;
-	char *token, **tokens = NULL;
+	int x, n_options;
+	error_t messages[] = {
+		{_ENOENT, _CODE_ENOENT},
+		{_EACCES, _CODE_EACCES},
+		{_CMD_NOT_EXISTS, _CODE_CMD_NOT_EXISTS},
+		{_ILLEGAL_NUMBER, _CODE_ILLEGAL_NUMBER}
+	};
 
-	tokens = malloc((MAX_TOKENS + 1) * sizeof(**tokens));
-	if (tokens == NULL)
-	{
-		perror("malloc failed");
-		exit(EXIT_FAILURE);
-	}
-	token = strtok((char *)input, " \n\t\r");
-	while (token != NULL)
-	{
-		tokens[token_count] = _strdup(token);
-		if (tokens[token_count] == NULL)
-		{
-			perror("handle_strdup failed");
-			free(tokens);
-			exit(EXIT_FAILURE);
-		}
-		token_count++;
-		token = strtok(NULL, " \n\t\r");
-	}
-	tokens[token_count] = NULL;
-	return (tokens);
+	n_options = sizeof(messages) / sizeof(messages[0]);
+	for (x = 0; x < n_options; x++)
+		if (info.error_code == messages[x].code)
+			return (messages[x].message);
+
+	return ("");
 }
 
 /**
- * _print - takes a pointer to a null-terminated character array as arg
- * @str: string
- * Return: void
- */
-void _print(const char *str)
+ * execute - Execute a command in other process
+ * @command: Command to execute
+ * @arguments: Arguments of the @command
+ * @info: General info about the shell
+ * @buff: Line readed
+ **/
+void execute(char *command, char **arguments, general_t *info, char *buff)
 {
-	size_t str_len;
+	int status;
+	pid_t pid;
 
-	if (str == NULL)
+	pid = fork();
+	if (pid == 0)
 	{
-		write(STDOUT_FILENO, "(null)", 6);
-		fflush(stdout);
-		return;
+		execve(command, arguments, environ);
+		perror("./sh");
+
+		free_memory_pp((void *) arguments);
+
+		if (info->value_path != NULL)
+		{
+			free(info->value_path);
+			info->value_path = NULL;
+		}
+
+		free(info);
+		free(buff);
+		exit(1);
 	}
-	str_len = _strlen(str);
-	write(STDOUT_FILENO, str, str_len);
-	fflush(stdout);
+	else if (pid > 0)
+	{
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			info->status_code = WEXITSTATUS(status);
+	}
+}
+
+/**
+ * current_directory - Execute the command if the order require
+ * @cmd: Command to execute
+ * @arguments: Arguments of the @cmd
+ * @buff: Line readed
+ * @info: General info about the shell
+ * Return: Status of the operations
+ **/
+int current_directory(char *cmd, char **argus, char *buff, general_t *info)
+{
+
+	if (info->is_current_path == _FALSE)
+	{
+		return (_FALSE);
+	}
+	if (is_executable(cmd) == PERMISSIONS)
+	{
+		execute(cmd, argus, info, buff);
+		return (_TRUE);
+	}
+	return (_FALSE);
+}
+
+/**
+ * read_prompt - Read lines in the prompt
+ * Return: Buffer readed or NULL if EOF was found
+ **/
+char *read_prompt()
+{
+	char *buffer;
+	int res;
+	size_t size;
+
+	buffer = NULL;
+
+	res = getline(&buffer, &size, stdin);
+
+	if (res == EOF)
+	{
+		free_memory_p((void *) buffer);
+		return (NULL);
+	}
+
+	return (buffer);
 }

@@ -1,95 +1,95 @@
 #include "shell.h"
 
 /**
- * _cd_command - changes the current working directory
- * @tokens: array of toks
- * Return: void
+ * number_controller - Control the argum
+ * @info: General inf about the shell
+ * @number: Argument of the b
+ * Return: If the actual argumen
  */
-void _cd_command(char **tokens)
+int number_controller(general_t *info, char *number)
 {
-	char *new_dir = tokens[1], current_dir[PATH_MAX];
-	static char prev_working_dir[PATH_MAX];
+	int _n;
 
-	if (new_dir == NULL)
+	_n = _atoi(number);
+
+	if (_n < 0 || contains_letter(number))
 	{
-		new_dir = _getenv("HOME");
-		if (new_dir == NULL)
-		{
-			perror("cd: HOME directory not found");
-			return;
-		}
+		info->status_code = 2;
+		info->error_code = _CODE_ILLEGAL_NUMBER;
+		error_extra(info, number);
+		return (_FALSE);
 	}
-	if (_strcmp(new_dir, "-") == 0)
-	{
-		if (prev_working_dir[0] != '\0')
-			new_dir = prev_working_dir;
-		else
-		{
-			perror("cd: no previous directory");
-			return;
-		}
-	}
-	if (chdir(new_dir) == -1)
-		perror("cd failed");
+
+	if (_n > 255)
+		info->status_code = _n % 256;
 	else
-	{
-		if (getcwd(current_dir, sizeof(current_dir)) != NULL)
-		{
-			if (setenv("PWD", current_dir, 1) != 0)
-				perror("setenv failed");
-		}
-		else
-			perror("getcwd failed");
-	}
+		info->status_code = _n;
+
+	return (_TRUE);
 }
 
 /**
- * _exit_env - handles "exit" and "env" commands
- * @tokens: tokens
- * @env: env
- * @sh_exit: integer
- * Return: void
- */
-void _exit_env(char **tokens, char **env, int sh_exit)
+ * free_memory_pp - Free a double pointer
+ * @ptr: Double pointer to free
+ **/
+void free_memory_pp(void **ptr)
 {
-	int status;
+	void **t;
 
-	sh_exit = 0;
-	if (_strcmp(tokens[0], "exit") == 0)
+	for (t = ptr; *t != NULL; t++)
+		free_memory_p(*t);
+	free_memory_p(ptr);
+}
+
+/**
+ * free_memory_p - Free a pointer
+ * @ptr: Pointer to free
+ **/
+void free_memory_p(void *ptr)
+{
+	if (ptr != NULL)
 	{
-		if (tokens[1] != NULL)
-		{
-			if (tokens[2] != NULL)
-			{
-				_print("exit: too many arguments\n");
-				return;
-			}
-			status = _atoi(tokens[1]);
-			if (status != 0)
-				sh_exit = status;
-			else
-			{
-				_print("exit: numeric argument required\n");
-				sh_exit = 2;
-			}
-		}
-		free(tokens);
-		exit(sh_exit);
+		free(ptr);
+		ptr = NULL;
 	}
-	else if (_strcmp(tokens[0], "env") == 0)
+	ptr = NULL;
+}
+
+/**
+ * _realloc - Reallocates a memory block using malloc and free
+ * @ptr: Pointer to the memory previously allocated
+ * @old_size: Size, in bytes, of the allocated space for ptr
+ * @new_size: New size, in bytes of the new memory block
+ * Return: Memory reallocated
+ **/
+void *_realloc(void *ptr, size_t old_size, size_t new_size)
+{
+	char *x, *au;
+	unsigned int a;
+
+	if (new_size == old_size)
+		return (ptr);
+	if (ptr == NULL)
 	{
-		if (_strcmp(tokens[0], "env") == 0)
-		{
-			if (tokens[1] != NULL)
-			{
-				_print("env: too many arguments\n");
-				return;
-			}
-			if (env != NULL)
-			{
-				if (printenvronment(env, &sh_exit) != 0)
-					perror("env failed");
-			}
-		}
+		x = malloc(new_size);
+		if (x == NULL)
+			return (NULL);
+
+		return (x);
 	}
+	if (new_size == 0 && ptr != NULL)
+	{
+		free(ptr);
+		return (NULL);
+	}
+	x = malloc(new_size);
+	if (x == NULL)
+		return (NULL);
+	au = ptr;
+	for (a = 0; a < old_size; a++)
+		x[a] = au[a];
+
+	free(ptr);
+
+	return (x);
 }

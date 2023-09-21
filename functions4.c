@@ -1,83 +1,94 @@
 #include "shell.h"
 
 /**
- * _atoi - converts str to int
- * @s: str
- * user comments
- * Return: int
- */
-int _atoi(char *s)
+ * error_extra - Print the error with extra information
+ * @info: General information about the shell
+ * @extra: Extra information
+ **/
+void error_extra(general_t *info, char *extra)
 {
-	size_t index = 0;
-	int result = 0, sign = 1, digitEncountered = 0;
+	char *m, *n, *a1, *a2;
+	int size_n, size_m, size_extra;
 
-	while (s[index] == ' ')
-		index++;
-	if (s[index] == '-')
-	{
-		sign = -1;
-		index++;
-	}
-	else if (s[index] == '+')
-		index++;
-	while (s[index] >= '0' && s[index] <= '9')
-	{
-		digitEncountered = 1;
-		result = result * 10 + (s[index] - '0');
-		index++;
-	}
-	if (!digitEncountered)
-		return (0);
-	return (sign * result);
+	n = NULL;
+	m = message_selector(*info);
+	n = to_string(info->n_commands);
+
+	size_n = _strlen(n);
+	size_m = _strlen(info->argv[0]);
+	size_extra = _strlen(extra);
+
+	a1 = malloc(size_m + size_n + 3);
+	a1 = _strcpy(a1, info->argv[0]);
+	a1 = _strcat(a1, ": ");
+	a1 = _strcat(a1, n);
+
+	a2 = malloc(_strlen(m) + size_extra + 3);
+	a2 = _strcpy(a2, m);
+	a2 = _strcat(a2, ": ");
+	a2 = _strcat(a2, extra);
+
+	m = join_words(a1, info->command, a2, ": ");
+	print_err(m);
+
+	free(m);
+	free(n);
+	free(a1);
+	free(a2);
 }
 
 /**
- * _getenv - Gets env
- * @name: env name
- * Return: env
- */
-char *_getenv(const char *name)
+ * error - Print the error
+ * @info: General info
+ **/
+void error(general_t *info)
 {
-	size_t i;
+	char *m;
+	char *n;
+	char *a;
+	int size_number, size_message;
 
-	if (name == NULL || environ == NULL)
-		return (NULL);
-	for (i = 0; environ[i] != NULL; i++)
-	{
-		char *env_var = environ[i];
-		size_t len = _strlen(name);
+	n = NULL;
+	m = message_selector(*info);
+	n = to_string(info->n_commands);
 
-		if (_strncmp(env_var, name, len) == 0 && env_var[len] == '=')
-			return (_strdup(env_var + len + 1));
-	}
-	return (NULL);
+	size_number = _strlen(n);
+	size_message = _strlen(info->argv[0]);
+
+	a = malloc(size_message + size_number + 3);
+
+	a = _strcpy(a, info->argv[0]);
+	a = _strcat(a, ": ");
+	a = _strcat(a, n);
+
+	m = join_words(a, info->command, m, ": ");
+	print_err(m);
+
+	free(m);
+	free(n);
+	free(a);
+}
+/**
+ * sigintHandler - Handler for SIGINT
+ * @sig_num: Unused parameter
+ **/
+void sigintHandler(int sig_num)
+{
+	(void) sig_num;
+
+	signal(SIGINT, sigintHandler);
+	print("\nJDshell$ ");
+	fflush(stdout);
 }
 
 /**
- * _strncmp - Compares at most the first n bytes of str1 and str2
- * @s1: str1
- * @s2: str2
- * @len: bytes
- * Return: len
- */
-int _strncmp(const char *s1, const char *s2, size_t len)
+ * prompt - Print the prompt
+ * @info: Struct of general information
+ **/
+void prompt(general_t *info)
 {
-	unsigned int p = 0;
-	int d = 0;
+	if (info->mode == NON_INTERACTIVE)
+		return;
 
-	while (p < len)
-	{
-		if (s1[p] == s2[p])
-		{
-			p++;
-			continue;
-		}
-		else
-		{
-			d = s1[p] - s2[p];
-			break;
-		}
-		p++;
-	}
-	return (d);
+	print("JDshell$ ");
 }
